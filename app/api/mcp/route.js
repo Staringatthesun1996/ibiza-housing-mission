@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { createMcpHandler } from 'mcp-handler';
 import { z } from 'zod';
 
@@ -55,6 +56,40 @@ function monthlyPayment(principal, annualRate, years) {
   if (!r) return principal / n;
   return principal * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
 }
+
+function safeHttpsUrl(value) {
+  try {
+    const url = new URL(value);
+    if (url.protocol !== 'https:') return false;
+    const host = url.hostname.toLowerCase();
+    if (host === 'localhost' || host === '127.0.0.1' || host === '::1') return false;
+    if (host.startsWith('10.') || host.startsWith('192.168.')) return false;
+    const m = host.match(/^172\.(\d+)\./);
+    if (m && Number(m[1]) >= 16 && Number(m[1]) <= 31) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function submissionReceipt(input) {
+  const canonical = [
+    input.listingUrl.trim().toLowerCase(),
+    input.price,
+    input.area,
+    input.bedrooms,
+    input.municipality
+  ].join('|');
+  return createHash('sha256').update(canonical).digest('hex').slice(0, 20);
+}
+
+const municipalityEnum = z.enum([
+  'Eivissa',
+  'Sant Antoni de Portmany',
+  'Santa Eulària des Riu',
+  'Sant Josep de sa Talaia',
+  'Sant Joan de Labritja'
+]);
 
 const handler = createMcpHandler(
   (server) => {
@@ -123,6 +158,82 @@ const handler = createMcpHandler(
               stressRate: annualRate + 1,
               stressedMonthlyPayment: Math.round(stressed),
               disclaimer: 'Illustrative only; excludes taxes, acquisition costs, community fees, insurance and bank underwriting.'
+            }, null, 2)
+          }]
+        };
+      }
+    );
+
+    server.tool(
+      'submit_property',
+      'Submits a public or shareable Ibiza property lead to the mission queue. Do not include private buyer data, private owner contact data, credentials, or confidential documents.',
+      {
+        sourceAgent: z.string().min(2).max(80),
+        title: z.string().min(3).max(120),
+        listingUrl: z.string().url().max(500).refine(safeHttpsUrl, 'A public/shareable HTTPS URL is required.'),
+        municipality: municipalityEnum,
+        price: z.number().positive().max(350000),
+        area: z.number().min(10).max(1000),
+        bedrooms: z.number().int().min(0).max(20),
+        landArea: z.number().min(0).max(100000).default(0),
+        legalStatus: z.enum(['clear', 'pending', 'ruin', 'non_residential', 'bare_ownership', 'usufruct']).default('pending'),
+        occupancy: z.enum(['free', 'pending', 'illegal_occupancy', 'no_possession']).default('pending'),
+        expandable: z.boolean().default(false),
+        garden: z.boolean().default(false),
+        mortgageable: z.boolean().default(true),
+        notes: z.string().max(600).default('')
+      },
+      async (input) => {
+        const evaluation = evaluateProperty(input);
+        const hasBedroomPath = input.bedrooms >= 2 || input.expandable || input.garden || (input.bedrooms === 1 && input.area >= 50);
+        const inSearchEnvelope = input.price <= 300000;
+        const accepted = !evaluation.hardReject && hasBedroomPath && inSearchEnvelope;
+        const receiptId = submissionReceipt(input);
+        const submittedAt = new Date().toISOString();
+
+        const record = {
+          event: 'PROPERTY_SUBMISSION',
+          schemaVersion: 1,
+          receiptId,
+          submittedAt,
+          status: accepted ? 'queued' : 'screened_out',
+          sourceAgent: input.sourceAgent,
+          title: input.title,
+          listingUrl: input.listingUrl,
+          municipality: input.municipality,
+          price: input.price,
+          area: input.area,
+          bedrooms: input.bedrooms,
+          landArea: input.landArea,
+          expandable: input.expandable,
+          garden: input.garden,
+          legalStatus: input.legalStatus,
+          occupancy: input.occupancy,
+          mortgageable: input.mortgageable,
+          notes: input.notes,
+          evaluation
+        };
+
+        console.info(`[PROPERTY_SUBMISSION] ${JSON.stringify(record)}`);
+
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({
+              accepted,
+              status: record.status,
+              receiptId,
+              submittedAt,
+              evaluation,
+              screening: {
+                inSearchEnvelope,
+                hasBedroomPath,
+                hardReject: evaluation.hardReject
+              },
+              nextStep: accepted
+                ? 'Queued for human/agent review. Receipt ID can be used to deduplicate the same listing.'
+                : 'Not queued because it fails the mission envelope or a hard screening rule.',
+              privacyNotice: 'Do not submit private buyer information or private owner contact data.'
             }, null, 2)
           }]
         };
