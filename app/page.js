@@ -1,0 +1,28 @@
+const card = { background: '#fff', borderRadius: 18, padding: 22, boxShadow: '0 8px 30px #00000010' };
+
+export default function Page() {
+  return (
+    <main style={{ maxWidth: 1000, margin: '0 auto', padding: 28 }}>
+      <section style={card}>
+        <h1>🏠 Ibiza Housing Mission</h1>
+        <p>
+          Sistema público para localizar vivienda habitual en Ibiza con <b>2 dormitorios reales o posibilidad legal de crear el segundo</b>.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 12 }}>
+          <div style={card}><small>Objetivo</small><h2>≤230k €</h2><p>Hasta 250k excepcional.</p></div>
+          <div style={card}><small>Espacio</small><h2>2 habitaciones</h2><p>O reforma/ampliación legal.</p></div>
+          <div style={card}><small>MCP</small><h2>Activo</h2><p><code>/api/mcp</code></p></div>
+        </div>
+      </section>
+      <section style={{ ...card, marginTop: 18 }}>
+        <h2>Herramientas para agentes</h2>
+        <ul>
+          <li><code>get_public_housing_brief</code></li>
+          <li><code>evaluate_property</code></li>
+          <li><code>mortgage_scenario</code></li>
+        </ul>
+        <p>El MCP no expone información privada del comprador.</p>
+      </section>
+    </main>
+  );
+}
