@@ -11,7 +11,7 @@ export default function Page() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 12 }}>
           <div style={card}><small>Objetivo</small><h2>≤230k €</h2><p>Hasta 250k excepcional.</p></div>
           <div style={card}><small>Espacio</small><h2>2 habitaciones</h2><p>O reforma/ampliación legal.</p></div>
-          <div style={card}><small>MCP</small><h2>Activo</h2><p><code>/api/mcp</code></p></div>
+          <div style={card}><small>MCP</small><h2>v1.1.0</h2><p><code>/api/mcp</code></p></div>
         </div>
       </section>
       <section style={{ ...card, marginTop: 18 }}>
@@ -20,8 +20,9 @@ export default function Page() {
           <li><code>get_public_housing_brief</code></li>
           <li><code>evaluate_property</code></li>
           <li><code>mortgage_scenario</code></li>
+          <li><code>submit_property</code> — entrega oportunidades y recibe un <code>receiptId</code>.</li>
         </ul>
-        <p>El MCP no expone información privada del comprador.</p>
+        <p>El MCP no expone información privada del comprador y no solicita datos privados del propietario.</p>
       </section>
     </main>
   );
