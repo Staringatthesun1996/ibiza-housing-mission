@@ -1,0 +1,22 @@
+name: Smoke Test Submission
+
+on:
+  push:
+    paths:
+      - '.github/workflows/smoke-submit.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Health check
+        run: |
+          curl --fail --silent --show-error https://ibiza-housing-mission-v2.vercel.app/api/health | grep '"version":"1.2.0"'
+      - name: Submit non-actionable smoke lead
+        run: |
+          RESPONSE=$(curl --fail --silent --show-error -X POST https://ibiza-housing-mission-v2.vercel.app/api/submit \
+            -H 'content-type: application/json' \
+            --data '{"location":"SMOKE TEST - IGNORE","price":9999999,"area":12,"bedrooms":0,"sellerType":"unknown","sellerName":"__SMOKE_TEST__","negotiation":"unknown","notes":"Automated endpoint smoke test. Ignore as housing lead.","consent":true}')
+          echo "$RESPONSE"
+          echo "$RESPONSE" | grep '"accepted":true'
+          echo "$RESPONSE" | grep '"receiptId"'
