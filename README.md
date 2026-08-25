@@ -30,9 +30,11 @@ Este repositorio y el MCP **no contienen información privada del comprador**. S
 
 ## Registro MCP
 
-Namespace previsto:
+Servidor publicado en el Official MCP Registry como:
 
-`io.github.staringatthesun1996/ibiza-housing-mission`
+`io.github.Staringatthesun1996/ibiza-housing-mission`
+
+Versión inicial: `1.0.0`.
 
 El archivo `server.json` describe el servidor remoto para el Official MCP Registry.
 
