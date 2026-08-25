@@ -12,7 +12,7 @@ export default function Page() {
           <div style={card}><small>Objetivo</small><h2>≤230k €</h2><p>Hasta 250k excepcional.</p></div>
           <div style={card}><small>Espacio</small><h2>2 habitaciones</h2><p>O reforma/ampliación legal.</p></div>
           <div style={card}><small>Prioridad</small><h2>Particular</h2><p>Venta directa y sin comisión.</p></div>
-          <div style={card}><small>MCP</small><h2>v1.1.0</h2><p><code>/api/mcp</code></p></div>
+          <div style={card}><small>MCP</small><h2>v1.2.0</h2><p><code>/api/mcp</code></p></div>
         </div>
         <div style={{ marginTop: 18 }}>
           <a href="/submit" style={{ display: 'inline-block', padding: '12px 16px', borderRadius: 10, textDecoration: 'none', background: '#172033', color: '#fff', fontWeight: 700 }}>Enviar una vivienda →</a>
