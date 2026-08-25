@@ -2,7 +2,7 @@
   "name": "ibiza-housing-mission",
   "version": "1.0.0",
   "private": true,
-  "mcpName": "io.github.staringatthesun1996/ibiza-housing-mission",
+  "mcpName": "io.github.Staringatthesun1996/ibiza-housing-mission",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
