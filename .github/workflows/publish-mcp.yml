@@ -2,7 +2,9 @@ name: Publish to MCP Registry
 
 on:
   push:
-    tags: ["v*"]
+    branches: ["main"]
+    paths: ["server.json"]
+  workflow_dispatch:
 
 jobs:
   publish:
