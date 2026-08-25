@@ -1,6 +1,6 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.staringatthesun1996/ibiza-housing-mission",
+  "name": "io.github.Staringatthesun1996/ibiza-housing-mission",
   "title": "Ibiza Housing Mission",
   "description": "Find and evaluate affordable Ibiza homes with two bedrooms or legal expansion potential.",
   "repository": {
